@@ -1,0 +1,14 @@
+[
+  {"id": "security-pr", "query": "Review this pull request for security problems.", "expected_any": ["pr-review-expert", "find-security-vulnerabilities-in-code", "senior-security"], "kind": "multi"},
+  {"id": "rag-design", "query": "Design a RAG system for a large knowledge base.", "expected_any": ["rag-architect"], "kind": "single"},
+  {"id": "react-performance", "query": "Why is my React app slow?", "expected_any": ["performance-profiler", "performance-optimization", "vercel-react-best-practices"], "kind": "multi"},
+  {"id": "schema", "query": "Design the PostgreSQL schema for this application.", "expected_any": ["database-schema-designer", "database-designer"], "kind": "single"},
+  {"id": "api-incident", "query": "Investigate a production API performance problem.", "expected_any": ["performance-optimization", "performance-profiler", "incident-commander", "observability-designer"], "kind": "single"},
+  {"id": "agent-workflow", "query": "Design a multi-agent workflow.", "expected_any": ["agent-workflow-designer", "agent-designer"], "kind": "single"},
+  {"id": "deployment", "query": "Prepare this project for production deployment.", "expected_any": ["deploy-checklist", "ship-gate", "ci-cd-pipeline-builder", "ci-cd-and-automation"], "kind": "single"},
+  {"id": "multimodal-research", "query": "Research recent multimodal agent architectures.", "expected_any": ["research", "agent-designer", "deep-research"], "kind": "multi"},
+  {"id": "generic-ambiguous", "query": "Help with my project.", "expected_any": [], "kind": "ambiguous"},
+  {"id": "no-match-gibberish", "query": "florb snizzle quux zorb", "expected_any": [], "kind": "no-match"},
+  {"id": "no-match-recipe", "query": "What should I cook for dinner tonight?", "expected_any": [], "kind": "no-match"},
+  {"id": "no-match-trivia", "query": "How many moons does Jupiter have?", "expected_any": [], "kind": "no-match"}
+]

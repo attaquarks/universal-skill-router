@@ -1,0 +1,329 @@
+{
+  "suite": "installed-skills-fixture",
+  "corpus": {
+    "indexed_skill_count": 459,
+    "root_count": 1,
+    "upstream_provenance_verified": false
+  },
+  "evaluation_limits": "Expected skill sets are manually curated, broad relevance labels, not blinded human judgments; this is a smoke benchmark, not a general accuracy claim.",
+  "summary": {
+    "case_count": 12,
+    "positive_cases": 8,
+    "Hit@1": 1.0,
+    "Hit@3": 1.0,
+    "Hit@5": 1.0,
+    "no_match_accuracy": 0.333,
+    "ambiguity_accuracy": 1.0,
+    "multi_skill_state_accuracy": 1.0,
+    "latency_ms": {
+      "median": 53.83,
+      "max": 59.01
+    }
+  },
+  "results": [
+    {
+      "id": "security-pr",
+      "input": "Review this pull request for security problems.",
+      "expected_any": [
+        "pr-review-expert",
+        "find-security-vulnerabilities-in-code",
+        "senior-security"
+      ],
+      "candidates": [
+        "pr-review-expert",
+        "managed-pentesting-with-strix",
+        "ci-security-scanning-with-strix",
+        "find-security-vulnerabilities-in-code",
+        "fix-security-vulnerabilities-with-strix"
+      ],
+      "selected": [
+        "pr-review-expert"
+      ],
+      "supporting": [
+        "ci-security-scanning-with-strix"
+      ],
+      "state": "MULTI_SKILL",
+      "confidence": 0.663,
+      "reason": "Primary evidence plus an independently relevant supporting skill.",
+      "latency_ms": 59.01,
+      "hit_rank": 1,
+      "kind": "multi",
+      "correct": true
+    },
+    {
+      "id": "rag-design",
+      "input": "Design a RAG system for a large knowledge base.",
+      "expected_any": [
+        "rag-architect"
+      ],
+      "candidates": [
+        "rag-architect",
+        "prompt-governance",
+        "llm-wiki",
+        "ui-design-system",
+        "knowledge-ops"
+      ],
+      "selected": [
+        "rag-architect"
+      ],
+      "supporting": [],
+      "state": "USE_SKILL",
+      "confidence": 0.845,
+      "reason": "High lexical evidence and a clear lead over alternatives.",
+      "latency_ms": 54.28,
+      "hit_rank": 1,
+      "kind": "single",
+      "correct": true
+    },
+    {
+      "id": "react-performance",
+      "input": "Why is my React app slow?",
+      "expected_any": [
+        "performance-profiler",
+        "performance-optimization",
+        "vercel-react-best-practices"
+      ],
+      "candidates": [
+        "vercel-react-best-practices",
+        "vercel-react-native-skills",
+        "vercel-react-view-transitions",
+        "performance-profiler",
+        "performance-optimization"
+      ],
+      "selected": [
+        "vercel-react-best-practices"
+      ],
+      "supporting": [
+        "performance-profiler"
+      ],
+      "state": "MULTI_SKILL",
+      "confidence": 0.716,
+      "reason": "Primary evidence plus an independently relevant supporting skill.",
+      "latency_ms": 52.57,
+      "hit_rank": 1,
+      "kind": "multi",
+      "correct": true
+    },
+    {
+      "id": "schema",
+      "input": "Design the PostgreSQL schema for this application.",
+      "expected_any": [
+        "database-schema-designer",
+        "database-designer"
+      ],
+      "candidates": [
+        "database-schema-designer",
+        "database-designer",
+        "schema-markup",
+        "senior-backend",
+        "sql-database-assistant"
+      ],
+      "selected": [
+        "database-schema-designer"
+      ],
+      "supporting": [],
+      "state": "USE_SKILL",
+      "confidence": 0.721,
+      "reason": "High lexical evidence and a clear lead over alternatives.",
+      "latency_ms": 53.81,
+      "hit_rank": 1,
+      "kind": "single",
+      "correct": true
+    },
+    {
+      "id": "api-incident",
+      "input": "Investigate a production API performance problem.",
+      "expected_any": [
+        "performance-optimization",
+        "performance-profiler",
+        "incident-commander",
+        "observability-designer"
+      ],
+      "candidates": [
+        "performance-optimization",
+        "performance-profiler",
+        "senior-backend",
+        "prompt-governance",
+        "content-production"
+      ],
+      "selected": [
+        "performance-optimization"
+      ],
+      "supporting": [],
+      "state": "USE_SKILL",
+      "confidence": 0.638,
+      "reason": "High lexical evidence and a clear lead over alternatives.",
+      "latency_ms": 56.86,
+      "hit_rank": 1,
+      "kind": "single",
+      "correct": true
+    },
+    {
+      "id": "agent-workflow",
+      "input": "Design a multi-agent workflow.",
+      "expected_any": [
+        "agent-workflow-designer",
+        "agent-designer"
+      ],
+      "candidates": [
+        "agent-workflow-designer",
+        "workflow-builder",
+        "agent-designer",
+        "git-workflow-and-versioning",
+        "spec-driven-workflow"
+      ],
+      "selected": [
+        "agent-workflow-designer"
+      ],
+      "supporting": [],
+      "state": "USE_SKILL",
+      "confidence": 0.622,
+      "reason": "High lexical evidence and a clear lead over alternatives.",
+      "latency_ms": 53.85,
+      "hit_rank": 1,
+      "kind": "single",
+      "correct": true
+    },
+    {
+      "id": "deployment",
+      "input": "Prepare this project for production deployment.",
+      "expected_any": [
+        "deploy-checklist",
+        "ship-gate",
+        "ci-cd-pipeline-builder",
+        "ci-cd-and-automation"
+      ],
+      "candidates": [
+        "ci-cd-and-automation",
+        "senior-ml-engineer",
+        "senior-computer-vision",
+        "deploy-to-vercel",
+        "content-production"
+      ],
+      "selected": [
+        "ci-cd-and-automation"
+      ],
+      "supporting": [],
+      "state": "USE_SKILL",
+      "confidence": 0.693,
+      "reason": "High lexical evidence and a clear lead over alternatives.",
+      "latency_ms": 51.26,
+      "hit_rank": 1,
+      "kind": "single",
+      "correct": true
+    },
+    {
+      "id": "multimodal-research",
+      "input": "Research recent multimodal agent architectures.",
+      "expected_any": [
+        "research",
+        "agent-designer",
+        "deep-research"
+      ],
+      "candidates": [
+        "research",
+        "product-research",
+        "research-summarizer",
+        "research-ops-skills",
+        "agent-designer"
+      ],
+      "selected": [
+        "research"
+      ],
+      "supporting": [
+        "agent-designer"
+      ],
+      "state": "MULTI_SKILL",
+      "confidence": 0.724,
+      "reason": "Primary evidence plus an independently relevant supporting skill.",
+      "latency_ms": 55.21,
+      "hit_rank": 1,
+      "kind": "multi",
+      "correct": true
+    },
+    {
+      "id": "generic-ambiguous",
+      "input": "Help with my project.",
+      "expected_any": [],
+      "candidates": [
+        "capture",
+        "senior-pm",
+        "senior-architect",
+        "senior-qa",
+        "senior-fullstack"
+      ],
+      "selected": [],
+      "supporting": [],
+      "state": "AMBIGUOUS",
+      "confidence": 0.563,
+      "reason": "Candidates overlap or evidence is too weak for safe automatic selection.",
+      "latency_ms": 54.53,
+      "hit_rank": null,
+      "kind": "ambiguous",
+      "correct": true
+    },
+    {
+      "id": "no-match-gibberish",
+      "input": "florb snizzle quux zorb",
+      "expected_any": [],
+      "candidates": [
+        "a11y-audit",
+        "ab-test-setup",
+        "academy-guide",
+        "ad-creative",
+        "adversarial-reviewer"
+      ],
+      "selected": [],
+      "supporting": [],
+      "state": "NO_MATCH",
+      "confidence": 0.0,
+      "reason": "No indexed skill has enough distinctive evidence.",
+      "latency_ms": 49.11,
+      "hit_rank": null,
+      "kind": "no-match",
+      "correct": true
+    },
+    {
+      "id": "no-match-recipe",
+      "input": "What should I cook for dinner tonight?",
+      "expected_any": [],
+      "candidates": [
+        "behuman",
+        "a11y-audit",
+        "ab-test-setup",
+        "academy-guide",
+        "ad-creative"
+      ],
+      "selected": [],
+      "supporting": [],
+      "state": "AMBIGUOUS",
+      "confidence": 0.45,
+      "reason": "Candidates overlap or evidence is too weak for safe automatic selection.",
+      "latency_ms": 50.05,
+      "hit_rank": null,
+      "kind": "no-match",
+      "correct": false
+    },
+    {
+      "id": "no-match-trivia",
+      "input": "How many moons does Jupiter have?",
+      "expected_any": [],
+      "candidates": [
+        "caveman",
+        "terraform-patterns",
+        "eu-ai-act-specialist",
+        "programmatic-seo",
+        "content-humanizer"
+      ],
+      "selected": [],
+      "supporting": [],
+      "state": "AMBIGUOUS",
+      "confidence": 0.579,
+      "reason": "Candidates overlap or evidence is too weak for safe automatic selection.",
+      "latency_ms": 48.77,
+      "hit_rank": null,
+      "kind": "no-match",
+      "correct": false
+    }
+  ]
+}
