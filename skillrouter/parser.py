@@ -74,24 +74,77 @@ def _sentences_after_labels(body: str, labels: tuple[str, ...]) -> list[str]:
 
 USE_WHEN_LABELS = ("use when", "use this when", "when to use", "best for", "activate when", "applies when",
     "use for", "use it when", "use if", "helpful when", "ideal for", "use whenever", "trigger", "triggers")
-_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.:;])\s+")
+# Sentence boundary for clause extraction. A colon is deliberately NOT a boundary: colon-form labels
+# ("When to use: latency regressions", "Triggers: flaky test") would otherwise be split into a bare
+# label and an orphaned clause, and the condition would be lost. Within a sentence, ":" also introduces
+# the very list a clause is made of.
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.;])\s+")
 
 
-def extract_use_when(description: str) -> str:
-    """Pull the applicability sentences out of a description, lexically.
+def _label_hits(text: str) -> list[tuple[int, str]]:
+    """Every applicability-label occurrence, as (offset, label), earliest first.
 
-    The skills convention is to state activation conditions in the description ("Use when tests fail,
-    builds break..."). Those sentences are the real triggers, so score them separately from the rest of
-    the prose. No model, no rewriting of upstream files: this only re-weights text the skill already has.
+    All labels are scanned, not just the first match, so "Use when you want X, or when you suspect Y"
+    yields both clauses.
+    """
+    lowered = text.lower()
+    hits: list[tuple[int, str]] = []
+    for label in USE_WHEN_LABELS:
+        start = 0
+        while True:
+            index = lowered.find(label, start)
+            if index < 0:
+                break
+            hits.append((index, label))
+            start = index + len(label)
+    return sorted(hits)
+
+
+# Opening phrases that state applicability without the word "use": "When the user wants to plan ...".
+APPLICABILITY_OPENERS = ("when the user", "when you", "when someone", "when a user", "when your",
+                         "when the team", "when an agent", "when working with", "when facing")
+
+
+def applicability_clause(description: str) -> str:
+    """The applicability text of a description, lexically.
+
+    The skills convention states activation conditions in the description ("Use when tests fail, builds
+    break..."). Keep only the text AFTER the label, not the sentence around it: the label is boilerplate
+    ("Use when", "Best for") and the surrounding prose is the same text the `description` field already
+    scores. Keeping the clause means this field carries the applicability conditions and nothing else.
+
+    Returns "" when the description states no applicability condition at all; the caller falls back to
+    the whole description so no term is lost.
     """
     if not description:
         return ""
     kept: list[str] = []
     for sentence in _SENTENCE_SPLIT_RE.split(description):
-        lowered = sentence.lower()
-        if any(label in lowered for label in USE_WHEN_LABELS):
-            kept.append(sentence)
+        stripped = sentence.strip()
+        if not stripped:
+            continue
+        hits = _label_hits(stripped)
+        if hits:
+            # Text after each label, so a sentence naming two conditions keeps both.
+            for index, (offset, label) in enumerate(hits):
+                end = hits[index + 1][0] if index + 1 < len(hits) else len(stripped)
+                clause = stripped[offset + len(label):end].strip(" :,-\u2013\u2014")
+                if clause:
+                    kept.append(clause)
+        elif any(stripped.lower().startswith(opener) for opener in APPLICABILITY_OPENERS):
+            kept.append(stripped)
     return _positive_text(" ".join(kept))
+
+
+def extract_use_when(description: str) -> str:
+    """Applicability clause for the `usewhen` field; "" when the description states no condition.
+
+    Deliberately NOT falling back to the whole description. The field is scored at 2.2 and the
+    description at 1.2, so a fallback would score a label-less skill's entire prose twice, once at
+    double weight. Vocabulary coverage is unaffected either way: the corpus document frequency is built
+    from every field, including the description, so a term absent from `usewhen` is still known.
+    """
+    return applicability_clause(description) if description else ""
 
 
 def _positive_text(text: str) -> str:

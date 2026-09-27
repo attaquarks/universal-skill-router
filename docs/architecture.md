@@ -9,6 +9,27 @@ The router sits above Agent Skills. The library owns skill instructions, optiona
 1. **Discover:** recursively locate `SKILL.md` beneath explicit roots, avoid symlink traversal by default, enforce path containment and file-size bounds.
 2. **Index:** parse common scalar/list YAML frontmatter plus skill headings and bounded trigger/use-when excerpts. Store SHA-256, stat data, metadata, and excerpt. Reuse unchanged rows.
 3. **Retrieve:** weighted BM25-style scores across name, triggers, aliases, keywords, description, domain, and excerpt. Apply exact names, phrase aliases, project preferences, and modest learned token boosts.
+
+### The `usewhen` field
+
+A skill states its activation conditions in its description ("Use when tests fail, builds break…"). The
+`usewhen` field holds that applicability text and is scored at weight 2.2, well above `description` at
+1.2, so the conditions a skill declares matter more than the prose around them.
+
+It holds the *clause*, not the sentence: the text after the label ("auditing accessibility, fixing
+violations, or checking color contrast"), not the label ("Use when") and not the head of the sentence
+("Accessibility audit skill for scanning … across React, Next.js and Vue"). The label is boilerplate, and
+the head is text the `description` field already scores — keeping either would score the same prose
+twice, once at double weight. A colon is deliberately not a sentence boundary, so colon-form labels
+(`When to use: …`, `Triggers: …`) keep their clause instead of leaving it orphaned.
+
+Descriptions with no applicability condition yield an empty field rather than a copy of the description,
+for the same double-counting reason. Vocabulary coverage is unaffected: document frequency is built from
+every field including the description, so a term absent from `usewhen` is still known to the corpus.
+
+The field is a pure function of the description and is always derived at load time, never read back from
+the index. An index written by an earlier version therefore picks up the current extraction with no
+rebuild, and every install scores identical text for the same `SKILL.md`.
 4. **Decide:** compare score strength and lead margin. Return `USE_SKILL`, `MULTI_SKILL`, `AMBIGUOUS`, or `NO_MATCH`, with ranked evidence and explanation.
 5. **Activate:** adapter maps selected file paths to host instructions. Semantic tie breaking is optional and explicit.
 6. **Learn:** locally aggregate selected/loaded/ignored/override events and transitions. Raw prompts are omitted unless configured.

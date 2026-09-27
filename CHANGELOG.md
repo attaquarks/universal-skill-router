@@ -2,6 +2,28 @@
 
 ## Unreleased
 
+- **`usewhen` holds the applicability clause.** The field is scored at 2.2 — the router's strongest prose
+  signal — but it was holding whole sentences, so for the 389 descriptions whose label begins the sentence
+  it scored the same prose the 1.2 description field already scored. It now holds the text after the label
+  and nothing else: no "Use when" boilerplate, no sentence head. Colon-form labels (`When to use: …`,
+  `Triggers: …`) keep their clause, because a colon is no longer treated as a sentence boundary. Records
+  whose field still carried label boilerplate: 61 → 5.
+- **No fallback copy.** A description with no applicability condition yields an empty field instead of a
+  verbatim copy of the description, which would have scored the same text at both 2.2 and 1.2. Vocabulary
+  coverage is unaffected: document frequency spans every field, description included.
+- **Always derived, never read back.** `usewhen` is a pure function of the description, so it is derived at
+  load time rather than trusted from the index. An index written by an earlier version therefore gets the
+  current extraction with no rebuild, and two installs score identical text for the same `SKILL.md`.
+- **Failure vocabulary.** Symptom phrasing is the normal way to report a problem ("it crashes", "rows are
+  incorrect", "we have a regression") while the skills that resolve it are written in causes ("debugging",
+  "error recovery"). `SYNONYMS` gains entries bridging the two. They map onto problem/triage vocabulary
+  only, never onto a domain noun: mapping "stuck" onto `queue` pulled message-board skills into a debugging
+  query and cost a wrong-skill case, so only the triage half is kept.
+- BROKEN retrieval 0.533 → 0.733, Hit@5 0.884 → 0.919, Hit@1 0.744 → 0.756, positive selection
+  0.779 → 0.814. no-match accuracy (0.909), no-match safety (1.0), ambiguity accuracy (1.0) and
+  wrong-skill rate (0.034) all unchanged. Median latency unchanged (54.0 → 53.6 ms interleaved on a
+  loaded machine, within run-to-run noise).
+
 - **Evidence by provenance.** Strong fields are now split by where their text comes from. `name`,
   `aliases` and `triggers` are declared by the skill about itself and count on any rare term; `keywords`
   is derived from prose (82% of its tokens come from the description) and counts only on very rare terms

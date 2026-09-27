@@ -72,7 +72,22 @@ fast quick quickly slower fastest soon later again today tomorrow yesterday imme
 better best worse good great nice proper correctly properly simply easily hard harder""".split())
 SYNONYMS = {"slow": ("performance", "latency"), "failing": ("debug", "failure"), "bug": ("debug", "failure"),
     "pull": ("pr",), "request": ("pr",), "deploy": ("deployment", "release"), "schema": ("database",),
-    "rag": ("retrieval", "embedding"), "retrieval": ("rag",), "websocket": ("realtime", "socket")}
+    "rag": ("retrieval", "embedding"), "retrieval": ("rag",), "websocket": ("realtime", "socket"),
+    # Failure vocabulary. A problem statement is usually phrased in symptoms ("it crashes", "rows are
+    # incorrect", "we have a regression") while the skills that resolve it are written in causes
+    # ("debugging", "error recovery", "systematic debugging"). These entries bridge that gap, which is
+    # why the BROKEN cases were missing: the right skills were not retrieved at all, so no amount of
+    # ranking or evidence work could reach them.
+    #
+    # Each entry maps a symptom onto problem/triage vocabulary. They deliberately do NOT map onto domain
+    # nouns: "stuck" -> ("blocked", "queue", "hang") dragged inbox and message-board skills into a
+    # debugging query and cost a wrong-skill case, so only the triage half is kept.
+    "crashes": ("crash", "bug", "failure"), "crashing": ("crash", "bug"),
+    "regression": ("bug", "failure"), "incorrect": ("wrong", "invalid", "bug"),
+    "corruption": ("incorrect", "integrity", "data"), "corrupt": ("incorrect", "integrity", "data"),
+    "leak": ("memory", "leaking"), "leaks": ("memory", "leaking"),
+    "stuck": ("blocked", "hang"), "exhausted": ("failure", "timeout"),
+    "cannot": ("failure", "broken")}
 PHRASE_SYNONYMS = {"pull request": "pr", "row level security": "rls", "real time": "realtime"}
 # Evidence-gate constants. Rareness is read from document frequency in this corpus, not a fixed
 # IDF cutoff, so the gate travels to a corpus of any size.
@@ -155,8 +170,10 @@ class Router:
             self.by_name[record.name.lower()].append(record)
         self._fields: dict[str, dict[str, list[str]]] = {}
         for record in self.records:
-            # Derived, not stored: an index from any earlier version loads and routes identically.
-            use_when = record.use_when or extract_use_when(record.description)
+            # Always derived, never read back: the field is a pure function of the description, so
+            # deriving it means an index written by an earlier version picks up the current extraction
+            # with no rebuild, and every install scores the same text for the same SKILL.md.
+            use_when = extract_use_when(record.description)
             self._fields[record.id] = {
                 "name": tokenize(record.name.replace("-", " ")),
                 "usewhen": tokenize(use_when),
