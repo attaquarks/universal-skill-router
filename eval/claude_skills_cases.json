@@ -1,14 +1,1094 @@
 [
-  {"id": "security-pr", "query": "Review this pull request for security problems.", "expected_any": ["pr-review-expert", "find-security-vulnerabilities-in-code", "senior-security"], "kind": "multi"},
-  {"id": "rag-design", "query": "Design a RAG system for a large knowledge base.", "expected_any": ["rag-architect"], "kind": "single"},
-  {"id": "react-performance", "query": "Why is my React app slow?", "expected_any": ["performance-profiler", "performance-optimization", "vercel-react-best-practices"], "kind": "multi"},
-  {"id": "schema", "query": "Design the PostgreSQL schema for this application.", "expected_any": ["database-schema-designer", "database-designer"], "kind": "single"},
-  {"id": "api-incident", "query": "Investigate a production API performance problem.", "expected_any": ["performance-optimization", "performance-profiler", "incident-commander", "observability-designer"], "kind": "single"},
-  {"id": "agent-workflow", "query": "Design a multi-agent workflow.", "expected_any": ["agent-workflow-designer", "agent-designer"], "kind": "single"},
-  {"id": "deployment", "query": "Prepare this project for production deployment.", "expected_any": ["deploy-checklist", "ship-gate", "ci-cd-pipeline-builder", "ci-cd-and-automation"], "kind": "single"},
-  {"id": "multimodal-research", "query": "Research recent multimodal agent architectures.", "expected_any": ["research", "agent-designer", "deep-research"], "kind": "multi"},
-  {"id": "generic-ambiguous", "query": "Help with my project.", "expected_any": [], "kind": "ambiguous"},
-  {"id": "no-match-gibberish", "query": "florb snizzle quux zorb", "expected_any": [], "kind": "no-match"},
-  {"id": "no-match-recipe", "query": "What should I cook for dinner tonight?", "expected_any": [], "kind": "no-match"},
-  {"id": "no-match-trivia", "query": "How many moons does Jupiter have?", "expected_any": [], "kind": "no-match"}
+  {
+    "id": "security-pr",
+    "query": "Review this pull request for security problems.",
+    "expected_any": [
+      "pr-review-expert",
+      "find-security-vulnerabilities-in-code",
+      "senior-security"
+    ],
+    "kind": "multi",
+    "path": "OPERATE"
+  },
+  {
+    "id": "rag-design",
+    "query": "Design a RAG system for a large knowledge base.",
+    "expected_any": [
+      "rag-architect"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "react-performance",
+    "query": "Why is my React app slow?",
+    "expected_any": [
+      "performance-profiler",
+      "performance-optimization",
+      "vercel-react-best-practices"
+    ],
+    "kind": "multi",
+    "path": "BROKEN"
+  },
+  {
+    "id": "schema",
+    "query": "Design the PostgreSQL schema for this application.",
+    "expected_any": [
+      "database-schema-designer",
+      "database-designer"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "api-incident",
+    "query": "Investigate a production API performance problem.",
+    "expected_any": [
+      "performance-optimization",
+      "performance-profiler",
+      "incident-commander",
+      "observability-designer"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "agent-workflow",
+    "query": "Design a multi-agent workflow.",
+    "expected_any": [
+      "agent-workflow-designer",
+      "agent-designer"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "deployment",
+    "query": "Prepare this project for production deployment.",
+    "expected_any": [
+      "deploy-checklist",
+      "ship-gate",
+      "ci-cd-pipeline-builder",
+      "ci-cd-and-automation"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "multimodal-research",
+    "query": "Research recent multimodal agent architectures.",
+    "expected_any": [
+      "research",
+      "agent-designer",
+      "deep-research"
+    ],
+    "kind": "multi",
+    "path": "OPERATE"
+  },
+  {
+    "id": "generic-ambiguous",
+    "query": "Help with my project.",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "no-match-gibberish",
+    "query": "florb snizzle quux zorb",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "no-match-recipe",
+    "query": "What should I cook for dinner tonight?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "no-match-trivia",
+    "query": "How many moons does Jupiter have?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "terraform-vpc",
+    "query": "Write a Terraform module for an AWS VPC.",
+    "expected_any": [
+      "terraform-patterns",
+      "aws-solution-architect"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "k8s-operator",
+    "query": "Create a Kubernetes operator for our custom resource.",
+    "expected_any": [
+      "kubernetes-operator",
+      "helm-chart-builder"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "stripe-billing",
+    "query": "Set up Stripe subscription billing for our product.",
+    "expected_any": [
+      "stripe-integration-expert"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "playwright-suite",
+    "query": "Build an end-to-end browser test suite for the login flow.",
+    "expected_any": [
+      "playwright-pro",
+      "generate",
+      "webapp-testing"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "snowflake-pipeline",
+    "query": "Design a Snowflake pipeline that loads event data daily.",
+    "expected_any": [
+      "snowflake-development",
+      "senior-data-engineer"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "mcp-server",
+    "query": "Create an MCP server that exposes our internal tools.",
+    "expected_any": [
+      "mcp-server-builder",
+      "mcp-builder"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "zero-downtime-migration",
+    "query": "Implement a zero-downtime database migration for the users table.",
+    "expected_any": [
+      "migration-architect",
+      "database-designer"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "threat-model",
+    "query": "Design a threat model for our payment service.",
+    "expected_any": [
+      "senior-security",
+      "threat-detection"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "dockerfile",
+    "query": "Write a Dockerfile and compose setup for local development.",
+    "expected_any": [
+      "docker-development"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "slo-dashboard",
+    "query": "Create dashboards and alerts for our service level objectives.",
+    "expected_any": [
+      "slo-architect",
+      "observability-designer"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "pg-indexes",
+    "query": "Design an index strategy for our PostgreSQL queries.",
+    "expected_any": [
+      "database-designer",
+      "sql-database-assistant"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "soc2-program",
+    "query": "Prepare our evidence for a SOC 2 Type II audit.",
+    "expected_any": [
+      "soc2-compliance",
+      "soc2-audit-prep"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "rn-onboarding",
+    "query": "Build an animated onboarding screen in React Native.",
+    "expected_any": [
+      "vercel-react-native-skills",
+      "animate-expo"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "cold-email-seq",
+    "query": "Write a cold email sequence for outbound sales.",
+    "expected_any": [
+      "cold-email"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "ab-pricing",
+    "query": "Design an A/B test for our pricing page.",
+    "expected_any": [
+      "ab-test-setup",
+      "experiment-designer"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "flag-rollout",
+    "query": "Plan a feature flag rollout for a risky change.",
+    "expected_any": [
+      "feature-flags-architect"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "spec-first",
+    "query": "Write a specification document before we implement the feature.",
+    "expected_any": [
+      "spec-driven-development",
+      "writing-plans",
+      "spec-driven-workflow"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "ci-monorepo",
+    "query": "Set up CI/CD pipelines for a monorepo with several packages.",
+    "expected_any": [
+      "ci-cd-pipeline-builder",
+      "ci-cd-and-automation",
+      "monorepo-navigator"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "unit-tests",
+    "query": "Create unit tests for our payment module.",
+    "expected_any": [
+      "senior-qa",
+      "tdd-guide",
+      "test-driven-development"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "saas-model",
+    "query": "Design the data model for a multi-tenant SaaS application.",
+    "expected_any": [
+      "database-designer",
+      "saas-scaffolder"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "grpc-api",
+    "query": "Design a REST API for our orders service.",
+    "expected_any": [
+      "api-and-interface-design",
+      "senior-backend"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "observability-plan",
+    "query": "Instrument our service with logs, metrics, and traces.",
+    "expected_any": [
+      "observability-and-instrumentation",
+      "observability-designer"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "ux-research",
+    "query": "Plan user research interviews for the new onboarding flow.",
+    "expected_any": [
+      "ux-researcher-designer",
+      "product-research",
+      "product-discovery"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "secrets-mgmt",
+    "query": "Set up secret management for our production services.",
+    "expected_any": [
+      "secrets-vault-manager",
+      "env-secrets-manager"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "prd-write",
+    "query": "Write a product requirements document for the new feature.",
+    "expected_any": [
+      "code-to-prd",
+      "product-manager-toolkit"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "checkout-500",
+    "query": "The checkout API is returning 500 errors in production.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "systematic-debugging",
+      "incident-commander",
+      "incident-response"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "pipeline-broken",
+    "query": "Our deploy pipeline is broken and nothing ships.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "ci-cd-pipeline-builder",
+      "systematic-debugging"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "app-crashes",
+    "query": "The app crashes whenever I open the settings screen.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "systematic-debugging"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "login-regression",
+    "query": "We have a regression in login after the last release.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "incident-commander",
+      "systematic-debugging"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "search-timeout",
+    "query": "Investigate why the search endpoint times out under load.",
+    "expected_any": [
+      "performance-profiler",
+      "systematic-debugging",
+      "performance-optimization"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "fix-flaky-test",
+    "query": "Fix the flaky end-to-end test that fails in CI.",
+    "expected_any": [
+      "fix",
+      "focused-fix",
+      "playwright-pro"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "memory-leak",
+    "query": "Debug a memory leak in the worker process.",
+    "expected_any": [
+      "performance-profiler",
+      "systematic-debugging",
+      "debugging-and-error-recovery"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "pool-exhausted",
+    "query": "The database connection pool is exhausted and customers are down.",
+    "expected_any": [
+      "incident-commander",
+      "performance-profiler",
+      "incident-response"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "build-windows-only",
+    "query": "The build fails on Windows but works on Linux.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "systematic-debugging",
+      "node-dependency-maintenance"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "auth-broken",
+    "query": "Users cannot log in since this morning, it is broken.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "incident-commander",
+      "systematic-debugging"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "data-corruption",
+    "query": "Some rows have incorrect values after the import, find out why.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "data-quality-auditor",
+      "systematic-debugging"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "stuck-queue",
+    "query": "Messages are stuck in the queue and nothing is being processed.",
+    "expected_any": [
+      "debugging-and-error-recovery",
+      "incident-commander",
+      "systematic-debugging"
+    ],
+    "kind": "single",
+    "path": "BROKEN"
+  },
+  {
+    "id": "api-review",
+    "query": "Review our API design before we ship version two.",
+    "expected_any": [
+      "api-design-reviewer",
+      "api-and-interface-design"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "security-audit",
+    "query": "Audit the codebase for security vulnerabilities.",
+    "expected_any": [
+      "find-security-vulnerabilities-in-code",
+      "security-pen-testing",
+      "application-security-testing"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "bundle-size",
+    "query": "Optimize the JavaScript bundle size of our frontend.",
+    "expected_any": [
+      "performance-optimization",
+      "vercel-optimize",
+      "senior-frontend"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "refactor-dup",
+    "query": "Refactor this module to remove the duplication.",
+    "expected_any": [
+      "code-simplification",
+      "tech-debt-tracker"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "seo-improve",
+    "query": "Improve our SEO for the marketing site.",
+    "expected_any": [
+      "seo-audit",
+      "site-architecture",
+      "aeo"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "churn-analysis",
+    "query": "Analyze our churn data to find retention patterns.",
+    "expected_any": [
+      "churn-prevention",
+      "product-analytics"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "pr-merge-review",
+    "query": "Review this pull request before merging it.",
+    "expected_any": [
+      "pr-review-expert",
+      "code-review-and-quality",
+      "code-reviewer"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "a11y-check",
+    "query": "Run an accessibility audit on our onboarding flow.",
+    "expected_any": [
+      "a11y-audit",
+      "web-design-guidelines"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "dep-audit",
+    "query": "Audit our dependencies for known vulnerabilities.",
+    "expected_any": [
+      "dependency-auditor",
+      "find-security-vulnerabilities-in-code"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "owasp-check",
+    "query": "Check our implementation against the OWASP Top 10.",
+    "expected_any": [
+      "owasp-top-10-testing",
+      "application-security-testing",
+      "security-and-hardening"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "animation-polish",
+    "query": "Improve the timing of our modal transition animations.",
+    "expected_any": [
+      "improve-animations",
+      "review-animations"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "pricing-cro",
+    "query": "Review our pricing page copy for conversion.",
+    "expected_any": [
+      "page-cro",
+      "copy-editing"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "llm-cost",
+    "query": "Our LLM API spend is growing, reduce the cost.",
+    "expected_any": [
+      "llm-cost-optimizer"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "query-tuning",
+    "query": "Optimize the performance of the analytics SQL queries.",
+    "expected_any": [
+      "performance-optimization",
+      "sql-database-assistant",
+      "performance-profiler"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "iso-audit",
+    "query": "Audit our information security management system for ISO 27001.",
+    "expected_any": [
+      "iso27001-audit-prep",
+      "isms-audit-expert",
+      "information-security-manager-iso27001"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "gdpr-check",
+    "query": "Check our data handling against GDPR requirements.",
+    "expected_any": [
+      "gdpr-audit-prep",
+      "gdpr-dsgvo-expert"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "vendor-review",
+    "query": "Review our third-party SaaS vendors and their risk.",
+    "expected_any": [
+      "vendor-management",
+      "procurement-optimizer"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "monitor-improve",
+    "query": "Improve our production monitoring and alerting.",
+    "expected_any": [
+      "observability-designer",
+      "observability-and-instrumentation",
+      "slo-architect"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "copy-edit",
+    "query": "Edit this blog post so it reads better.",
+    "expected_any": [
+      "copy-editing",
+      "content-humanizer",
+      "writing-guidelines"
+    ],
+    "kind": "single",
+    "path": "OPERATE"
+  },
+  {
+    "id": "rag-plus-eval",
+    "query": "Design a RAG pipeline and evaluate its retrieval quality.",
+    "expected_any": [
+      "rag-architect",
+      "eval"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "multi-agent-supervisor",
+    "query": "Build a multi-agent system with a supervisor and worker agents.",
+    "expected_any": [
+      "agent-designer",
+      "agent-workflow-designer",
+      "agenthub"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "obs-slo",
+    "query": "Set up observability and SLOs for our new payment service.",
+    "expected_any": [
+      "observability-designer",
+      "slo-architect",
+      "observability-and-instrumentation"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "schema-migrations",
+    "query": "Design the database schema and write the migrations.",
+    "expected_any": [
+      "database-schema-designer",
+      "database-designer",
+      "migration-architect"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "landing-cro",
+    "query": "Create a landing page and optimize it for conversion.",
+    "expected_any": [
+      "landing-page-generator",
+      "page-cro",
+      "landing"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "launch-plan",
+    "query": "Plan a product launch with the marketing campaign.",
+    "expected_any": [
+      "launch-strategy",
+      "marketing-strategy-pmm",
+      "content-strategy"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "arch-api",
+    "query": "Review the architecture and the API contract together.",
+    "expected_any": [
+      "senior-architect",
+      "api-design-reviewer",
+      "api-and-interface-design"
+    ],
+    "kind": "multi",
+    "path": "OPERATE"
+  },
+  {
+    "id": "gha-security",
+    "query": "Set up GitHub Actions for testing and security scanning.",
+    "expected_any": [
+      "ci-cd-pipeline-builder",
+      "ci-security-scanning-with-strix",
+      "github"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "market-size",
+    "query": "Research the market and size the opportunity for this product.",
+    "expected_any": [
+      "market-research",
+      "research",
+      "product-discovery"
+    ],
+    "kind": "multi",
+    "path": "OPERATE"
+  },
+  {
+    "id": "analytics-dashboard",
+    "query": "Build a product analytics dashboard with the key KPIs.",
+    "expected_any": [
+      "product-analytics",
+      "observability-designer"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "design-system",
+    "query": "Design a component library and document its usage.",
+    "expected_any": [
+      "ui-design-system",
+      "frontend-ui-engineering",
+      "frontend-design"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "spec-and-plan",
+    "query": "Write the technical spec and then the implementation plan.",
+    "expected_any": [
+      "writing-plans",
+      "spec-driven-development",
+      "planning-and-task-breakdown"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "pentest-and-fix",
+    "query": "Run a penetration test and then fix what you find.",
+    "expected_any": [
+      "penetration-testing-with-strix",
+      "fix-security-vulnerabilities-with-strix",
+      "web-app-penetration-testing"
+    ],
+    "kind": "multi",
+    "path": "OPERATE"
+  },
+  {
+    "id": "frontend-and-a11y",
+    "query": "Build the new settings screen and audit its accessibility.",
+    "expected_any": [
+      "frontend-ui-engineering",
+      "a11y-audit",
+      "senior-frontend"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "migration-and-orm",
+    "query": "Migrate the database and update the ORM models.",
+    "expected_any": [
+      "migration-architect",
+      "database-designer",
+      "sql-database-assistant"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "board-deck",
+    "query": "Prepare a board deck covering financial and product updates.",
+    "expected_any": [
+      "board-deck-builder",
+      "board-prep"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "prd-and-roadmap",
+    "query": "Write the PRD and the roadmap for the next quarter.",
+    "expected_any": [
+      "product-manager-toolkit",
+      "roadmap-communicator",
+      "senior-pm"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "incident-and-postmortem",
+    "query": "Handle the incident and write the postmortem.",
+    "expected_any": [
+      "incident-commander",
+      "post-mortem",
+      "postmortem",
+      "incident-response"
+    ],
+    "kind": "multi",
+    "path": "BROKEN"
+  },
+  {
+    "id": "amb-improve",
+    "query": "Improve this.",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "amb-better",
+    "query": "Make it better.",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "amb-broken-vague",
+    "query": "It's not working.",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "amb-fix-issue",
+    "query": "Fix the issue.",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "amb-usual",
+    "query": "Do the usual.",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "amb-discussed",
+    "query": "Can you help me with the thing we discussed earlier?",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "amb-thoughts",
+    "query": "What do you think about this?",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "amb-next",
+    "query": "What should we do next?",
+    "expected_any": [],
+    "kind": "ambiguous"
+  },
+  {
+    "id": "nm-capital",
+    "query": "What is the capital of Australia?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-biryani",
+    "query": "Give me a recipe for chicken biryani.",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-worldcup",
+    "query": "Who won the 2018 FIFA World Cup?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-weather",
+    "query": "What's the weather in Lahore tomorrow?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-book",
+    "query": "Recommend a good book to read on holiday.",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-airport",
+    "query": "How do I get to the airport from here?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-joke",
+    "query": "Tell me a joke about programmers.",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-flight",
+    "query": "How long does it take to fly to Dubai?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-gold",
+    "query": "What is the price of gold today?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-dentist",
+    "query": "Book me a dentist appointment for Friday.",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-president",
+    "query": "Who is the president of France?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-football",
+    "query": "Did the cricket match finish last night?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-gibberish-1",
+    "query": "zxcvb qwerty asdfgh",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-gibberish-2",
+    "query": "asdf asdf asdf",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-gibberish-3",
+    "query": "???",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-numeric",
+    "query": "11 22 33 44",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-holiday",
+    "query": "Where should I go on holiday in December?",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "nm-movie",
+    "query": "Suggest a movie for tonight.",
+    "expected_any": [],
+    "kind": "no-match"
+  },
+  {
+    "id": "edge-terse",
+    "query": "RAG",
+    "expected_any": [
+      "rag-architect"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "edge-named-skill",
+    "query": "Use the rag-architect skill to design the retrieval layer.",
+    "expected_any": [
+      "rag-architect"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "edge-multi-domain",
+    "query": "Design the schema, the API, and the frontend for the new feature.",
+    "expected_any": [
+      "database-designer",
+      "api-and-interface-design",
+      "frontend-ui-engineering",
+      "senior-fullstack"
+    ],
+    "kind": "multi",
+    "path": "BUILD"
+  },
+  {
+    "id": "edge-long-query",
+    "query": "We are building a production-grade multi-tenant SaaS platform and need help designing the database schema, the authentication model, and the billing integration before we start writing code.",
+    "expected_any": [
+      "database-designer",
+      "database-schema-designer",
+      "stripe-integration-expert",
+      "saas-scaffolder",
+      "senior-architect"
+    ],
+    "kind": "single",
+    "path": "BUILD"
+  },
+  {
+    "id": "edge-short-nonsense",
+    "query": "go fast now",
+    "expected_any": [],
+    "kind": "no-match"
+  }
 ]

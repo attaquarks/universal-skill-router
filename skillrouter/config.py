@@ -15,8 +15,11 @@ LEARNED_PATH = APP_DIR / "learned.json"
 DEFAULT_CONFIG: dict[str, Any] = {
     "version": 1, "roots": [], "max_skill_bytes": 1_000_000, "max_excerpt_chars": 8_000,
     "follow_symlinks": False,
-    "confidence": {"use": 0.62, "support": 0.47, "margin": 0.05, "no_match": 0.28},
-    "routing": {"max_candidates": 5, "max_chain_skills": 3, "prefer_orchestrators": True},
+    "confidence": {"use": 0.62, "support": 0.47, "margin": 0.05, "no_match": 0.28,
+                   # Path triage raises the bar for problem statements (a fix task needs a clearer match)
+                   # and annotates estimates for open-ended edit/review work.
+                   "paths": {"BROKEN": {"use": 0.68}, "BUILD": {"use": 0.62}, "OPERATE": {"use": 0.60}, "GENERAL": {"use": 0.62}}},
+    "routing": {"max_candidates": 5, "max_chain_skills": 3, "prefer_orchestrators": True, "triage": True},
     "enforcement": {"mode": "ADVISORY"},
     "learning": {"enabled": True, "store_raw_prompts": False, "min_events": 3},
     "semantic": {"enabled": False, "command": "", "timeout_seconds": 5},

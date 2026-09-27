@@ -8,7 +8,8 @@ from .models import SkillRecord
 FRONTMATTER_RE = re.compile(r"\A---\s*\r?\n(.*?)\r?\n---\s*(?:\r?\n|\Z)", re.DOTALL)
 HEADING_RE = re.compile(r"^#{1,4}\s+(.+?)\s*$", re.MULTILINE)
 TOKEN_RE = re.compile(r"[a-zA-Z0-9][a-zA-Z0-9_+.#/-]{1,}")
-STOPWORDS = frozenset("a an and are as at be by for from how in into is it of on or our that the this to use when with your you i me my we they he she what who whom whose why which should would could can do does did have has had will won".split())
+STOPWORDS = frozenset("""a an and are as at be by for from how in into is it of on or our that the this to use when with your you i me my we they he she what who whom whose why which should would could can do does did have has had will won
+these those thing things discussed earlier please just really something anything else another other same""".split())
 
 
 def tokenize(text: str) -> list[str]:
@@ -71,6 +72,28 @@ def _sentences_after_labels(body: str, labels: tuple[str, ...]) -> list[str]:
     return [line.strip(" -*\t") for line in body.splitlines() if len(line.strip()) < 500 and any(label in line.lower() for label in labels)][:16]
 
 
+USE_WHEN_LABELS = ("use when", "use this when", "when to use", "best for", "activate when", "applies when",
+    "use for", "use it when", "use if", "helpful when", "ideal for", "use whenever", "trigger", "triggers")
+_SENTENCE_SPLIT_RE = re.compile(r"(?<=[.:;])\s+")
+
+
+def extract_use_when(description: str) -> str:
+    """Pull the applicability sentences out of a description, lexically.
+
+    The skills convention is to state activation conditions in the description ("Use when tests fail,
+    builds break..."). Those sentences are the real triggers, so score them separately from the rest of
+    the prose. No model, no rewriting of upstream files: this only re-weights text the skill already has.
+    """
+    if not description:
+        return ""
+    kept: list[str] = []
+    for sentence in _SENTENCE_SPLIT_RE.split(description):
+        lowered = sentence.lower()
+        if any(label in lowered for label in USE_WHEN_LABELS):
+            kept.append(sentence)
+    return _positive_text(" ".join(kept))
+
+
 def _positive_text(text: str) -> str:
     """Do not turn a skill's explicit 'NOT for X' disambiguation into a positive match."""
     text = re.sub(r"\b(?:not|never)\s+for\b[^.\n;]*", "", text, flags=re.IGNORECASE)
@@ -92,6 +115,7 @@ def parse_skill(path: Path, root: Path, source_hash: str, mtime_ns: int, size: i
     related_lines = _sentences_after_labels(body, ("related skill", "orchestrat", "router"))
     related = [token for line in related_lines for token in re.findall(r"`([^`]+)`", line)]
     keywords = list(dict.fromkeys(tokenize(_positive_text(" ".join([name, description, domain, *aliases, *tags, *triggers, *headings])))))[:120]
+    use_when = extract_use_when(description)
     compact_body = _positive_text("\n".join([*headings, *trigger_lines, *related_lines, body[:max_excerpt]]))[:max_excerpt]
     lower_body = body.lower()
     is_orchestrator = frontmatter.get("router") is True or frontmatter.get("metadata.router") == "true"
@@ -99,4 +123,4 @@ def parse_skill(path: Path, root: Path, source_hash: str, mtime_ns: int, size: i
     return SkillRecord(id=str(path.resolve()), name=name, path=str(path.resolve()), root=str(root.resolve()), source_hash=source_hash,
         mtime_ns=mtime_ns, size=size, description=description, domain=domain, aliases=aliases, tags=list(dict.fromkeys(tags)),
         triggers=list(dict.fromkeys(triggers)), keywords=keywords, related_skills=list(dict.fromkeys(related)), headings=headings,
-        body_excerpt=compact_body, is_orchestrator=is_orchestrator, warnings=warnings)
+        body_excerpt=compact_body, use_when=use_when, is_orchestrator=is_orchestrator, warnings=warnings)

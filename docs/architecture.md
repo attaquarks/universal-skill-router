@@ -17,6 +17,30 @@ The router sits above Agent Skills. The library owns skill instructions, optiona
 
 The confidence field is a heuristic score combining saturating lexical strength and rank separation. It is not a probability and is not calibrated against human judgments. A high score without distinguishing evidence can still be ambiguous. Evaluate the thresholds against your skill corpus and queries before using AUTO behavior.
 
+## Out-of-domain gate (why NO_MATCH is trustworthy)
+
+A high lexical score is not evidence that a prompt is a skill task, so the router runs a lexical
+evidence gate before it will select anything. The gate never changes ranking; it only decides whether
+the winner's evidence is real. In order:
+
+1. **Noise** — an empty, fragmented, stopword-only or numeric query is not a task.
+2. **Out of domain** — a question shape ("what/where/who/why/how", or a trailing `?`) with no work verb,
+   or a question about the world rather than the user's work, is not a skill task.
+3. **Corpus context** — if half or more of the query's content terms appear in no indexed skill,
+   nothing installed covers it. Inflections are folded ("breaks" matches "break") so ordinary
+   phrasing is not mistaken for unknown vocabulary.
+4. **Evidence** — the winner must show a skill-name claim (two claimed name terms, one rare claimed
+   term, or an exact name/alias phrase) or at least one rare, non-generic term in a *strong* field:
+   `name`, `aliases`, `triggers`, `keywords`. Rarity is document frequency in this corpus (≤14% of
+   skills, ≤3% considered very rare), not a fixed IDF cutoff, so the gate travels to a corpus of any
+   size. Description and body are deliberately excluded: a rare word merely mentioned in prose is not
+   evidence of a skill.
+
+Verdicts differ by cause. Input that is not a skill task returns `NO_MATCH`. Input that is plausible
+work with no identifiable skill returns `AMBIGUOUS` — the router asks instead of guessing. A query
+that shares exactly one common noun with a skill name, with nothing else in common, is `AMBIGUOUS`:
+"build a test suite" must not select `api-test-suite-builder`.
+
 ## Domain routers and chains
 
 The parser reads optional `metadata.router` or `router` fields and can infer a possible orchestrator from its instructions. Such an entry receives a small preference only after it already matches query evidence. Project routes can name an orchestrator or curated chain. The universal router does not replace or reconstruct domain-level orchestration protocols.
