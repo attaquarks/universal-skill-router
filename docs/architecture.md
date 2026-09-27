@@ -30,11 +30,32 @@ the winner's evidence is real. In order:
    nothing installed covers it. Inflections are folded ("breaks" matches "break") so ordinary
    phrasing is not mistaken for unknown vocabulary.
 4. **Evidence** — the winner must show a skill-name claim (two claimed name terms, one rare claimed
-   term, or an exact name/alias phrase) or at least one rare, non-generic term in a *strong* field:
-   `name`, `aliases`, `triggers`, `keywords`. Rarity is document frequency in this corpus (≤14% of
-   skills, ≤3% considered very rare), not a fixed IDF cutoff, so the gate travels to a corpus of any
-   size. Description and body are deliberately excluded: a rare word merely mentioned in prose is not
-   evidence of a skill.
+   term, or an exact name/alias phrase) or at least one rare, non-generic term in a *strong* field.
+   Rarity is document frequency in this corpus (≤14% of skills, ≤3% considered very rare), not a fixed
+   IDF cutoff, so the gate travels to a corpus of any size.
+
+   Strong fields are split by provenance, because not every indexed field says the same thing about a
+   skill:
+
+   | field | provenance | counts as evidence |
+   | --- | --- | --- |
+   | `name`, `aliases`, `triggers` | declared by the skill about itself | any rare, non-generic term |
+   | `keywords` | derived from prose (`parse_skill` builds it from name + description + domain + tags + headings) | only **very** rare terms (≤3% of skills) |
+   | `description`, `body` | prose | never |
+
+   Keywords are derived, not declared: 82% of their tokens come from the description alone. Treating a
+   keyword hit like an identity claim let "Refactor this module to remove the duplication." select a
+   skill on the single word `module`, which is ordinary prose spread across 19 skills. `owasp` or
+   `accessibility` still identify a skill; `module` and `remove` do not. Description and body are
+   excluded outright: a rare word merely mentioned in prose is not evidence of a skill.
+
+   Query and document must also agree about what counts as the same word. The name field is
+   hyphen-split, so a query does the same: `multi-tenant` yields both the compound (matching keywords
+   and descriptions verbatim) and its parts (`multi`, `tenant`), which is the only way to reach a name
+   part. Trivial inflections are folded on the query side exactly as the corpus-context check folds
+   them, so `vendors` reaches a skill whose own name says `vendor` and `SLOs` reaches `SLO`. Folded and
+   split forms are only ever *added*, never substituted, so an exact match still outranks an
+   approximate one.
 
 Verdicts differ by cause. Input that is not a skill task returns `NO_MATCH`. Input that is plausible
 work with no identifiable skill returns `AMBIGUOUS` — the router asks instead of guessing. A query

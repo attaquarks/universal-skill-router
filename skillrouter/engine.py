@@ -17,6 +17,44 @@ from .indexer import load_records
 from .models import Candidate, DecisionState, RouteDecision, SkillRecord, under_root
 from .parser import extract_use_when, tokenize
 
+
+# Hyphenated compounds are one identifier to a user and several words to the index: leaving
+# "multi-tenant" whole means it can never meet the name part "tenant", even though a user typing
+# "tenant" would match. Split query compounds into their parts, keeping the compound too.
+_QUERY_SPLIT_RE = re.compile(r"[-_/]+")
+
+
+def _query_tokens(query: str) -> list[str]:
+    """Tokens for a query: each token, the parts of any hyphenated compound, and trivial inflections.
+
+    "multi-tenant SSO" -> ["multi-tenant", "multi", "tenant", "sso"]. Order and dedup are preserved so
+    the compound keeps its verbatim match against keywords and descriptions.
+
+    Inflections are folded the same way the out-of-vocabulary guard already folds them, so the matcher
+    and the guard agree on what counts as the same word: "vendors" must reach a skill whose own name
+    says "vendor", and "SLOs" must reach "SLO". The folded forms are only ever added -- never
+    substituted -- so an exact match still outranks an approximate one.
+    """
+    tokens = tokenize(query)
+    for token in list(tokens):
+        if _QUERY_SPLIT_RE.search(token):
+            tokens.extend(tokenize(token.replace("-", " ").replace("_", " ").replace("/", " ")))
+    folded: list[str] = []
+    for token in tokens:
+        for variant in _INFLECTIONS(token):
+            if variant != token and variant not in tokens:
+                folded.append(variant)
+    return list(dict.fromkeys(tokens + folded))
+
+
+def _INFLECTIONS(term: str) -> set[str]:
+    """Trivial inflections of a term, mirroring Router._variants so query and guard stay in step."""
+    variants = {term}
+    for suffix, replacement in (("ies", "y"), ("es", ""), ("s", ""), ("ing", ""), ("ing", "e"), ("ed", ""), ("ed", "e")):
+        if term.endswith(suffix) and len(term) - len(suffix) >= 3:
+            variants.add(term[: len(term) - len(suffix)] + replacement)
+    return variants
+
 # Fields whose vocabulary is specific to the skill, in specificity order. Description/body are
 # deliberately excluded: a rare word merely mentioned in prose is not evidence of a skill.
 STRONG_FIELDS = ("name", "aliases", "triggers", "keywords")
@@ -167,7 +205,7 @@ class Router:
 
     @staticmethod
     def _query_terms(query: str) -> list[str]:
-        direct = tokenize(query)
+        direct = _query_tokens(query)
         expanded = [synonym for term in direct for synonym in SYNONYMS.get(term, ())]
         lowered = query.lower()
         expanded.extend(alias for phrase, alias in PHRASE_SYNONYMS.items() if phrase in lowered)
@@ -245,7 +283,7 @@ class Router:
             # A small preference, never a selection without semantic evidence.
             score += 0.35
             evidence.append("declared/discovered orchestrator")
-        strong_hits = sum(1 for term in distinctive if self._strongest_field(record.id, term) in STRONG_FIELDS)
+        strong_hits = sum(1 for term in distinctive if self._counts_as_strong(record.id, term))
         # Name claims are counted separately from rareness: a skill legitimately named after common
         # words ("api-design-reviewer") is still the right skill for "review our API design".
         name_hits = (len({term for term in direct_terms if term in fields["name"]})
@@ -283,6 +321,23 @@ class Router:
     def _anchor(self, term: str) -> bool:
         """A term only counts as domain evidence when it is rare across the corpus and not generic filler."""
         return term not in GENERIC and term not in ANCHOR_STOP and term not in OPERATION_STOP and self._rare(term)
+
+    def _counts_as_strong(self, skill_id: str, term: str) -> bool:
+        """Is this term strong evidence for this skill?
+
+        Name, aliases and triggers are identity: the skill declares the term about itself, so any hit
+        there identifies it. Keywords are derived from prose -- parse_skill builds them from
+        name+description+domain+tags+headings, and 82% of keyword tokens come from the description
+        alone -- so a keyword hit counts only when the term is *very* rare in this corpus. "owasp" and
+        "accessibility" identify a skill; "module" and "remove" are ordinary prose that dozens of
+        skills happen to mention, and on those alone the router should ask rather than guess.
+        """
+        field = self._strongest_field(skill_id, term)
+        if field in ("name", "aliases", "triggers"):
+            return True
+        if field == "keywords":
+            return self._very_rare(term)
+        return False
 
     def _strongest_field(self, skill_id: str, term: str) -> str:
         """Which strong field claims this term, most specific first."""

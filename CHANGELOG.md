@@ -2,6 +2,25 @@
 
 ## Unreleased
 
+- **Evidence by provenance.** Strong fields are now split by where their text comes from. `name`,
+  `aliases` and `triggers` are declared by the skill about itself and count on any rare term; `keywords`
+  is derived from prose (82% of its tokens come from the description) and counts only on very rare terms
+  (≤3% of the corpus); `description` and `body` still never count. This stops ordinary prose from
+  selecting a skill: "Refactor this module to remove the duplication." no longer answers with a skill
+  that merely mentions `module`. Wrong-skill rate 0.043 → 0.034 on the 117-case suite, with no-match
+  accuracy unchanged at 0.909.
+- **Query/document symmetry.** A hyphenated query token is now split into its parts as well as kept
+  whole, mirroring the name field, so `multi-tenant` can reach the name part `tenant`. Trivial
+  inflections are folded on the query side exactly as the corpus-context check already folded them, so
+  `vendors` reaches a skill named `vendor-management` and `SLOs` reaches `SLO`. Folded and split forms
+  are only added, never substituted.
+- Metrics on the 117-case suite: Hit@1 0.709 → 0.744, Hit@5 0.860 → 0.884, positive selection
+  0.767 → 0.779, multi-skill chained 11 → 12, wrong-skill 0.043 → 0.034; no-match accuracy (0.909),
+  no-match safety (1.0), ambiguity accuracy (1.0) and path accuracy (0.942) all held. BROKEN retrieval
+  in the per-path report rose 0.400 → 0.533.
+- Median latency 17.7 → 19.0 ms on 468 skills: folded and split tokens enlarge the query term set, so
+  BM25's inner loop does more work. Still ~2.6x under the 50 ms target.
+
 - **No-match detection (P0).** A lexical evidence gate now runs before any selection: noise/stopword
   and numeric queries, questions about the world with no work verb, and queries whose content terms
   mostly appear in no indexed skill are refused. A winner must show a skill-name claim or at least one
