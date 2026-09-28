@@ -101,6 +101,22 @@ path; with `routing.triage = false` there is no path and no scoped expansion.
 The table is restricted to symptom *keys*. Topic nouns such as `memory`, `pool` and `queue` are
 explicitly excluded: mapping them toward triage leaks debugging skills into build and operate queries.
 
+### Evidence and the scored token set
+
+Name evidence is computed from the same prepared token list that BM25 scores, so the two sides of the
+engine always describe the same query. The prepared set is the raw query tokens plus, only ever as
+*additions*, their folded forms (`SLOs` → `slos`, `slo`), the parts of any hyphen compound
+(`multi-tenant` → `multi`, `tenant`) and the synonym expansions. Additive-only is deliberate: an exact
+match must keep outranking an approximate one.
+
+This matters beyond scoring because *signals are evidence*. A skill named `slo-architect` is a distinct
+claim only if the query's `SLOs` is recognised as naming it. While the signal path read the raw tokens
+the same query scored correctly but produced no signal, so the match could not support a chain and could
+be reported as ambiguous instead of selected. It also gives the scoped triage vocabulary a second role:
+`debugging`, `failure` and `incident` are name tokens of the resolving skills, so once they are part of
+the query's signal set those skills register as a genuine second claim rather than as duplicates of the
+primary that merely share its topic.
+
 ## Domain routers and chains
 
 The parser reads optional `metadata.router` or `router` fields and can infer a possible orchestrator from its instructions. Such an entry receives a small preference only after it already matches query evidence. Project routes can name an orchestrator or curated chain. The universal router does not replace or reconstruct domain-level orchestration protocols.

@@ -2,6 +2,30 @@
 
 ## Unreleased
 
+- **Name signals read the scored token set.** `_score` computed name evidence from the *raw* query tokens
+  while BM25 scored the *prepared* set (inflection-folded, hyphen-split, synonym-expanded). "SLOs" scored
+  against a skill named `slo-architect` but registered no name signal, so a correct match could neither
+  support a chain nor count as distinct evidence — the same query/document asymmetry fixed in 85f12d0 for
+  scoring, left behind on the signal path. `prepared` now carries one token list used by both sides.
+  Signals and scores now describe the same query.
+- This is also what made `memory-leak` chain: the scoped triage terms (`debugging`, `failure`, `incident`)
+  are name tokens of the resolver skills, so admitting them to the signal set is what lets those skills be
+  recognised as a second claim rather than duplicates of the primary.
+- Hit@5 0.953 → 0.977, Hit@1 0.779 → 0.802, BROKEN retrieval 0.933 → **1.000**, positive-selection
+  correctness 0.953 → 0.977. Wrong-skill rate **improved** 0.026 → 0.009 (unsafe cases 3 → 1).
+  no-match (0.909), no-match safety (1.0), ambiguity (1.0) and path accuracy (0.942) unchanged.
+- **Multi-skill reporting corrected.** Both harnesses published a key named `multi_skill_state_accuracy`
+  with *different* definitions — the comparison harness additionally required retrieval to be correct, which
+  is why they disagreed (0.455 vs 0.545). Chaining and retrieval are now reported separately:
+  `multi_skill_state_accuracy` (chained) and `multi_skill_chain_accuracy` (chained *and* retrieved).
+- The supporting-candidate rule was **not** changed. Relaxing it (any new signal, +strong-hit) raised true
+  chains 12 → 16 but false chains on single-subject queries 35 → 44; chain precision moved 0.255 → 0.267,
+  which is not a clear win, so it was left alone. The remaining multi-skill gap is mostly retrieval
+  (expected skills land at rank `None`), not chaining.
+- Latency unchanged: the same one `tokenize()` + one `_query_terms()` call per route, with the result no
+  longer discarded for the signal path. Interleaved measurements are indistinguishable within load drift.
+
+
 - **Path-scoped symptom expansion.** A failure is reported by symptom while the skills that resolve it are
   named with triage vocabulary (`systematic-debugging`, `debugging-and-error-recovery`,
   `incident-commander`). The topic noun in such a query is often a *name* token of an unrelated skill, so it

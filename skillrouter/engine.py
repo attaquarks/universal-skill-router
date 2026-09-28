@@ -538,8 +538,11 @@ class Router:
         # Triage runs before query preparation because expansion is path-aware: a symptom only reads as a
         # failure once the query is known to be a problem statement.
         path = self._classify_path(query) if self.config.get("routing", {}).get("triage", True) else "GENERAL"
-        # Query preparation is done exactly once per route, not once per scored record.
-        prepared = (query.lower(), tokens, self._query_terms(query, path))
+        # Query preparation is done exactly once per route, not once per scored record. The matched-token
+        # set is the same one BM25 scores, so name signals and field scores agree about what the query
+        # says: "SLOs" reaches a skill named "slo-architect" on both sides, not just one.
+        direct = self._query_terms(query, path)
+        prepared = (query.lower(), direct, direct)
         gate = self._no_match_scope(query, tokens)
         project = self._project_route(query) if gate is None else None
         chain = self._manual_chain(project, query)

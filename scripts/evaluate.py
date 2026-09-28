@@ -70,7 +70,14 @@ def main() -> int:
         "no_match_accuracy": _rate([result["correct"] for result in no_match]),
         "no_match_safe_rate": _rate([result["safe"] for result in no_match]),
         "ambiguity_accuracy": _rate([result["correct"] for result in ambiguous]),
+        # Multi-skill is reported as two separate things on purpose. The state rate says how often a
+        # multi request produced a chain; the chain rate additionally requires the expected skills to have
+        # been retrieved at all. A missing skill is a RETRIEVAL failure, and reporting it as a chaining
+        # failure (or counting it as a wrong skill) hides which of the two is broken. Only the chain rate
+        # is a claim about the supporting-candidate logic.
         "multi_skill_state_accuracy": _rate([result["state"] == "MULTI_SKILL" for result in regular if result["kind"] == "multi"]),
+        "multi_skill_chain_accuracy": _rate([result["state"] == "MULTI_SKILL" and result["correct"]
+                                             for result in regular if result["kind"] == "multi"]),
         "wrong_skill_rate": _rate([not result["safe"] for result in results]),
         "path_accuracy": _rate([result["path"] == result["expected_path"] for result in results if result.get("expected_path")]),
         "per_path": per_path,
