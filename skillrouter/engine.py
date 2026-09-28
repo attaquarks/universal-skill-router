@@ -89,6 +89,29 @@ SYNONYMS = {"slow": ("performance", "latency"), "failing": ("debug", "failure"),
     "stuck": ("blocked", "hang"), "exhausted": ("failure", "timeout"),
     "cannot": ("failure", "broken")}
 PHRASE_SYNONYMS = {"pull request": "pr", "row level security": "rls", "real time": "realtime"}
+# Symptom -> triage vocabulary, applied ONLY when the query is already triaged BROKEN.
+#
+# A failure is reported by symptom ("the app crashes", "we have a leak") while the skills that resolve it
+# are NAMED with triage vocabulary: systematic-debugging, debugging-and-error-recovery, incident-commander,
+# incident-response. The topic noun in such a query ("app", "memory", "pool") is often a name token of an
+# unrelated skill, so it scores ten times what an ordinary term does and buries the resolver. Bridging the
+# symptom onto the triage vocabulary is what reaches those names.
+#
+# This is deliberately NOT merged into SYNONYMS. Applied globally, it would make "memory" or "queue" mean
+# "failure" in a BUILD or OPERATE query about those things, which is the topic-domination bug in reverse.
+# Gating on the BROKEN path keeps topic semantics intact everywhere else.
+SYMPTOM_TRIAGE = {
+    "crash": ("failure", "debugging"), "crashes": ("failure", "debugging"), "crashed": ("failure", "debugging"),
+    "crashing": ("failure", "debugging"), "fails": ("failure", "debugging"), "failed": ("failure", "debugging"),
+    "failing": ("failure", "debugging"), "breaks": ("failure", "debugging"), "broken": ("failure", "debugging"),
+    "regression": ("failure", "debugging"), "leak": ("failure", "debugging"), "leaks": ("failure", "debugging"),
+    "leaking": ("failure", "debugging"), "stuck": ("failure", "debugging"), "hang": ("failure", "debugging"),
+    "hangs": ("failure", "debugging"), "flaky": ("failure", "debugging"), "deadlock": ("failure", "debugging"),
+    "misconfigured": ("failure", "debugging"), "corruption": ("failure", "debugging"),
+    "incorrect": ("failure", "debugging"),
+    "exhausted": ("failure", "incident"), "timeout": ("failure", "incident"), "timeouts": ("failure", "incident"),
+    "outage": ("failure", "incident"), "down": ("failure", "incident"),
+}
 # Evidence-gate constants. Rareness is read from document frequency in this corpus, not a fixed
 # IDF cutoff, so the gate travels to a corpus of any size.
 RARE_DF_RATIO = 0.14
@@ -221,12 +244,17 @@ class Router:
         return None
 
     @staticmethod
-    def _query_terms(query: str) -> list[str]:
+    def _query_terms(query: str, path: str = "GENERAL") -> list[str]:
         direct = _query_tokens(query)
         expanded = [synonym for term in direct for synonym in SYNONYMS.get(term, ())]
         lowered = query.lower()
         expanded.extend(alias for phrase, alias in PHRASE_SYNONYMS.items() if phrase in lowered)
-        return direct + expanded
+        if path == "BROKEN":
+            # Only a query classified BROKEN may read a symptom as a failure. Applied here rather than in
+            # SYNONYMS so "memory"/"queue"/"pool" keep their topic meaning for BUILD and OPERATE.
+            terms = set(direct) | set(expanded)
+            expanded.extend(synonym for term in terms for synonym in SYMPTOM_TRIAGE.get(term, ()))
+        return list(dict.fromkeys(direct + expanded))
 
     def _manual_chain(self, project: dict[str, Any] | None, query: str) -> list[list[str]]:
         if not project:
@@ -507,10 +535,12 @@ class Router:
         started = time.perf_counter()
         # Query profiling is one extra tokenize pass over a short string; the per-record loop stays the only O(n) work.
         tokens = tokenize(query)
-        # Query preparation is done exactly once per route, not once per scored record.
-        prepared = (query.lower(), tokens, self._query_terms(query))
-        gate = self._no_match_scope(query, tokens)
+        # Triage runs before query preparation because expansion is path-aware: a symptom only reads as a
+        # failure once the query is known to be a problem statement.
         path = self._classify_path(query) if self.config.get("routing", {}).get("triage", True) else "GENERAL"
+        # Query preparation is done exactly once per route, not once per scored record.
+        prepared = (query.lower(), tokens, self._query_terms(query, path))
+        gate = self._no_match_scope(query, tokens)
         project = self._project_route(query) if gate is None else None
         chain = self._manual_chain(project, query)
         ranked = sorted((self._score(prepared, record, project) for record in self.records), key=lambda candidate: candidate.score, reverse=True)

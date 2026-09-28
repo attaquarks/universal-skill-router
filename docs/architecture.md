@@ -83,6 +83,24 @@ work with no identifiable skill returns `AMBIGUOUS` — the router asks instead 
 that shares exactly one common noun with a skill name, with nothing else in common, is `AMBIGUOUS`:
 "build a test suite" must not select `api-test-suite-builder`.
 
+### Path-scoped query expansion
+
+Expansion is context-sensitive in one place. A failure is reported by *symptom* ("the app crashes",
+"we have a leak") while the skills that resolve it are *named* with triage vocabulary —
+`systematic-debugging`, `debugging-and-error-recovery`, `incident-commander`, `incident-response`. The
+topic noun in such a query ("app", "memory", "pool", "queue") is frequently a name token of an unrelated
+skill, so it collects the IDF×10 name boost and buries the resolver: "Debug a memory leak in the worker
+process" scored four `memory-*` skills at 75–80 while the debugging skills sat at rank 6 and 52.
+
+`SYMPTOM_TRIAGE` bridges symptom onto triage vocabulary, and is applied **only when the query is already
+triaged BROKEN**. It is a separate table from `SYNONYMS` rather than an addition to it, because a global
+mapping would make "memory" or "queue" mean "failure" in "design a memory pool" — the topic-domination
+bug in reverse. Triage therefore runs before query preparation in `route()`, so expansion can see the
+path; with `routing.triage = false` there is no path and no scoped expansion.
+
+The table is restricted to symptom *keys*. Topic nouns such as `memory`, `pool` and `queue` are
+explicitly excluded: mapping them toward triage leaks debugging skills into build and operate queries.
+
 ## Domain routers and chains
 
 The parser reads optional `metadata.router` or `router` fields and can infer a possible orchestrator from its instructions. Such an entry receives a small preference only after it already matches query evidence. Project routes can name an orchestrator or curated chain. The universal router does not replace or reconstruct domain-level orchestration protocols.

@@ -2,6 +2,21 @@
 
 ## Unreleased
 
+- **Path-scoped symptom expansion.** A failure is reported by symptom while the skills that resolve it are
+  named with triage vocabulary (`systematic-debugging`, `debugging-and-error-recovery`,
+  `incident-commander`). The topic noun in such a query is often a *name* token of an unrelated skill, so it
+  collects the IDF×10 name boost and buries the resolver. `SYMPTOM_TRIAGE` bridges symptom onto triage
+  vocabulary and is applied **only when the query is already triaged BROKEN**. Triage now runs before query
+  preparation so expansion can see the path, and `routing.triage = false` disables both.
+- The table is deliberately separate from `SYNONYMS`, not merged into it: applied globally it would make
+  "memory" or "queue" mean "failure" in a build or operate query about those things. Topic nouns (`memory`,
+  `pool`, `queue`, `app`) are excluded as keys for the same reason, and verified not to leak on
+  BUILD/OPERATE topic queries.
+- BROKEN retrieval 0.733 → 0.933, Hit@5 0.919 → 0.953, Hit@1 0.756 → 0.779, positive selection
+  0.814 → 0.837. Wrong-skill rate **improved** 0.034 → 0.026 — `pool-exhausted` stopped being a wrong
+  answer. no-match accuracy (0.909), no-match safety (1.0), ambiguity accuracy (1.0) and path accuracy
+  (0.942) unchanged. Median latency 19.2 → 19.7 ms (interleaved, 6 passes).
+
 - **`usewhen` holds the applicability clause.** The field is scored at 2.2 — the router's strongest prose
   signal — but it was holding whole sentences, so for the 389 descriptions whose label begins the sentence
   it scored the same prose the 1.2 description field already scored. It now holds the text after the label
